@@ -1,0 +1,13 @@
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+ name: melodium-controller-role-binding
+ namespace: melodium
+subjects:
+- kind: ServiceAccount
+  name: melodium-controller-service-account
+  namespace: melodium
+roleRef:
+ kind: Role
+ name: melodium-controller-role
+

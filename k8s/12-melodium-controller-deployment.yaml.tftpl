@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: melodium-controller-deployment
+  namespace: melodium
+  labels:
+    app: melodium-controller
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: melodium-controller
+  template:
+    metadata:
+      labels:
+        app: melodium-controller
+    spec:
+      serviceAccountName: melodium-controller-service-account
+      affinity:
+        nodeAffinity:                                 
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: melodium-role
+                operator: In
+                values:
+                - control
+        podAntiAffinity:                                 
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - topologyKey: kubernetes.io/hostname
+            labelSelector:                               
+              matchLabels:                               
+                app: melodium-controller
+      containers:
+      - name: melodium-controller-container
+        image: registry.gitlab.com/melodium/kube-controller:scratch
+        imagePullPolicy: Always
+        env:
+        - name: RUST_LOG
+          value: info
+        - name: MELODIUM_CONTROL_ID
+          value: ${uuid}
+        - name: MELODIUM_CONTROL_NAME
+          value: ${name}
+        - name: MELODIUM_CONTROL_DESCRIPTION
+          value: ${description}
+        - name: MELODIUM_CONTROL_COMMON_KEY
+          value: ${common_key}
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: melodium-pools-configmap
+          mountPath: /etc/pools
+          readOnly: true
+        - name: melodium-controller-token
+          mountPath: /etc/api-token
+          readOnly: true
+        - name: melodium-private-rsa-key
+          mountPath: /etc/private-key
+          readOnly: true
+      volumes:
+      - name: melodium-pools-configmap
+        configMap:
+          name: melodium-pools-configmap
+      - name: melodium-controller-token
+        secret:
+          secretName: melodium-controller-token
+      - name: melodium-private-rsa-key
+        secret:
+          secretName: melodium-private-rsa-key
+      imagePullSecrets:
+      - name: melodium-images-pull-secret

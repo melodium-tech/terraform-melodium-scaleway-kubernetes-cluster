@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: overprovisioning-${lower(name)}
+  namespace: melodium
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      run: overprovisioning
+  template:
+    metadata:
+      labels:
+        run: overprovisioning
+    spec:
+      priorityClassName: overprovisioning
+      terminationGracePeriodSeconds: 0
+      affinity:
+        nodeAffinity:                                 
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: melodium-pool
+                operator: In
+                values:
+                - ${name}
+      containers:
+      - name: reserve-resources
+        image: registry.k8s.io/pause:3.9
+        resources:
+          requests:
+            cpu: "1000m"
+            ephemeral-storage: "${storage_size}Gi"

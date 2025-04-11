@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: melodium
+  name: melodium-pools-configmap
+data:
+  pools.json: |
+    ${jsonencode(pools)}

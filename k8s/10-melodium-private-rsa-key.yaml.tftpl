@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: melodium-private-rsa-key
+  namespace: melodium
+data:
+  # key.pem is expected to be in PEM PKCS8 format (and base64 encoded, as kubernetes requirement)
+  # To generate a new one:
+  # $ openssl genrsa -out melodium-cluster.key 4096
+  # $ openssl pkcs8 -topk8 -in melodium-cluster.key -nocrypt -out key.pem
+  # $ cat key.pem | base64 -w0 > keybase64
+  # Or see the terraform tls_private_key resource and private_key_pem_pkcs8 entry
+  key.pem: ${base64encode(key_pem)}

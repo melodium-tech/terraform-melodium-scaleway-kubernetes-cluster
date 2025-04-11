@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: melodium-controller-token
+  namespace: melodium
+data:
+  token.txt: ${base64encode(token)}
