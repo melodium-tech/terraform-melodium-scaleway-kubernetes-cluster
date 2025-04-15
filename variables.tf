@@ -48,14 +48,14 @@ variable "cluster_work_pools" {
   description = "Map of work pools"
   default = {
     "COPARM1-4C-16G" = {
-      node_type = "COPARM1-4C-16G",
-      volume_size = 50,
+      node_type = "COPARM1-4C-16G"
+      volume_size = 50
       min_size = 0
       max_size = 4
     },
     "DEV1-L" = {
-      node_type = "DEV1-L",
-      volume_size = 80,
+      node_type = "DEV1-L"
+      volume_size = 80
       min_size = 0
       max_size = 4
     }
