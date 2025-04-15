@@ -2,7 +2,6 @@
 variable "project_id" {
   type        = string
   description = "Scaleway project id (UUID)"
-  default = "ed732865-8d9f-45a9-8025-79a82ba27651"
 }
 
 variable "region" {
@@ -19,7 +18,7 @@ variable "zone" {
 
 variable "cluster_name" {
   type        = string
-  description = "Mélodium cluster name"
+  description = "Mélodium cluster name (must be unique)"
 }
 
 variable "cluster_description" {
@@ -31,6 +30,12 @@ variable "cluster_description" {
 variable "cluster_token" {
   type        = string
   description = "Mélodium cluster API token"
+}
+
+variable "api_uri" {
+  type        = string
+  description = "Mélodium API URI"
+  default     = "https://api.melodium.tech/0.1"
 }
 
 variable "cluster_work_pools" {
@@ -51,8 +56,8 @@ variable "cluster_work_pools" {
     "DEV1-L" = {
       node_type = "DEV1-L",
       volume_size = 80,
-      min_size = 1
-      max_size = 14
+      min_size = 0
+      max_size = 4
     }
   }
 }

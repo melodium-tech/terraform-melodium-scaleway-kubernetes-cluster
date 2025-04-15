@@ -38,7 +38,7 @@ spec:
                 app: melodium-controller
       containers:
       - name: melodium-controller-container
-        image: registry.gitlab.com/melodium/kube-controller:scratch
+        image: ${controller_image}
         imagePullPolicy: Always
         env:
         - name: RUST_LOG
@@ -51,6 +51,14 @@ spec:
           value: ${description}
         - name: MELODIUM_CONTROL_COMMON_KEY
           value: ${common_key}
+        - name: MELODIUM_NAMESPACE
+          value: melodium
+        - name: MELODIUM_API_URL
+          value: ${api_uri}
+        - name: MELODIUM_CLUSTER_PROVIDER
+          value: scaleway
+        - name: MELODIUM_IMAGES_PULL_SOURCE
+          value: ${melodium_images_pull_source}
         ports:
         - containerPort: 8080
         volumeMounts:

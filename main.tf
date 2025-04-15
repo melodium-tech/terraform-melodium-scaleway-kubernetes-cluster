@@ -90,16 +90,18 @@ resource "null_resource" "kubeconfig" {
     token                  = scaleway_k8s_cluster.terraform-cluster.kubeconfig[0].token
     cluster_ca_certificate = scaleway_k8s_cluster.terraform-cluster.kubeconfig[0].cluster_ca_certificate
 
+    local_exec_api_uri = var.api_uri
     local_exec_cluster_token = var.cluster_token
     local_exec_cluster_id = uuidv5(var.project_id, var.cluster_name)
   }
   
   provisioner "local-exec" {
     environment = {
+      URI = self.triggers.local_exec_api_uri
       TOKEN = self.triggers.local_exec_cluster_token
       ID = self.triggers.local_exec_cluster_id
     }
-    command = "curl --silent --show-error -X DELETE -H \"Authorization: Bearer $TOKEN\" \"https://api-staging.melodium.tech/0.1/execution/cluster/$ID\" "
+    command = "curl --silent --show-error -X DELETE -H \"Authorization: Bearer $TOKEN\" \"$URI/execution/cluster/$ID\" "
     when    = destroy
   }
 }
@@ -200,6 +202,9 @@ resource "kubectl_manifest" "k8s-melodium-controller-deployment" {
     name = var.cluster_name
     description = var.cluster_description
     common_key = random_uuid.terraform-control-common-key.id
+    api_uri = var.api_uri
+    controller_image = "rg.${var.region}.scw.cloud/melodium/kube-controller:0.1-kube1.30"
+    melodium_images_pull_source = "rg.${var.region}.scw.cloud/melodium"
   })
   wait_for_rollout = false
   depends_on = [ kubectl_manifest.k8s-melodium-cluster-certificate ]
